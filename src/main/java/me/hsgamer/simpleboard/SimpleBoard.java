@@ -61,8 +61,8 @@ public final class SimpleBoard extends JavaPlugin implements Listener {
     config.addDefault("enabled-worlds", Collections.singletonList("world"));
     config.addDefault("update", 0);
 
-    title = config.getString("title", "&c&lTitle");
-    int time = config.getInt("update", 0);
+    title = config.getString("title");
+    int time = config.getInt("update");
     task = new BukkitRunnable() {
       @Override
       public void run() {
