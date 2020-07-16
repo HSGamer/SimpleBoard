@@ -93,14 +93,14 @@ public final class SimpleBoard extends JavaPlugin implements Listener {
   }
 
   private void addBoard(Player player) {
-    UUID uuid = player.getUniqueId();
+    boardMap.computeIfAbsent(player.getUniqueId(), uuid1 -> {
+      FastBoard board = new FastBoard(player);
 
-    FastBoard board = new FastBoard(player);
+      board.updateTitle(format(uuid1, title));
+      board.updateLines(format(uuid1, line));
 
-    board.updateTitle(format(uuid, title));
-    board.updateLines(format(uuid, line));
-
-    boardMap.put(player.getUniqueId(), board);
+      return board;
+    });
   }
 
   private void removeBoard(UUID uuid) {
@@ -122,9 +122,7 @@ public final class SimpleBoard extends JavaPlugin implements Listener {
   public void onWorldChange(PlayerChangedWorldEvent e) {
     Player player = e.getPlayer();
     if (enabledWorld.contains(player.getWorld().getName())) {
-      if (!boardMap.containsKey(player.getUniqueId())) {
-        addBoard(player);
-      }
+      addBoard(player);
     } else {
       removeBoard(player.getUniqueId());
     }
