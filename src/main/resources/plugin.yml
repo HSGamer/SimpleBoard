@@ -2,6 +2,6 @@ name: SimpleBoard
 version: ${project.version}
 main: me.hsgamer.simpleboard.SimpleBoard
 api-version: 1.16
-depend: [PlaceholderAPI, ProtocolLib]
+depend: [PlaceholderAPI]
 authors: [HSGamer]
 description: Simple Scoreboard Per World
