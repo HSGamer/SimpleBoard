@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Objects;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -151,7 +152,7 @@ public class FastBoard {
     }
 
     if (!VersionType.V1_13.isHigherOrEqual() && title.length() > 32) {
-      throw new IllegalArgumentException("Title is longer than 32 chars");
+      title = title.substring(0, 32);
     }
 
     this.title = title;
@@ -267,11 +268,21 @@ public class FastBoard {
       }
     }
 
-    List<String> oldLines = new ArrayList<>(this.lines);
+    final List<String> oldLines = new ArrayList<>(this.lines);
     this.lines.clear();
     this.lines.addAll(lines);
 
-    int linesSize = this.lines.size();
+    final int linesSize = this.lines.size();
+
+    if (!VersionType.V1_13.isHigherOrEqual()) {
+      final ListIterator<String> iterator = this.lines.listIterator();
+      while (iterator.hasNext()) {
+        final String line = iterator.next();
+          if (line != null && line.length() > 30) {
+              iterator.set(line.substring(0, 30));
+          }
+      }
+    }
 
     try {
       if (oldLines.size() != linesSize) {
@@ -499,15 +510,12 @@ public class FastBoard {
   }
 
   private void sendPacket(Object packet) throws ReflectiveOperationException {
-    if (deleted) {
-      throw new IllegalStateException("This FastBoard is deleted");
-    }
-
-    if (player.isOnline()) {
-      Object entityPlayer = PLAYER_GET_HANDLE.invoke(player);
-      Object playerConnection = PLAYER_CONNECTION.get(entityPlayer);
-      SEND_PACKET.invoke(playerConnection, packet);
-    }
+      if (deleted || !player.isOnline()) {
+          return;
+      }
+    Object entityPlayer = PLAYER_GET_HANDLE.invoke(player);
+    Object playerConnection = PLAYER_CONNECTION.get(entityPlayer);
+    SEND_PACKET.invoke(playerConnection, packet);
   }
 
   private void setField(Object object, Class<?> fieldType, Object value)
