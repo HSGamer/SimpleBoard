@@ -8,6 +8,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import me.clip.placeholderapi.PlaceholderAPI;
+import me.tigerhix.lib.scoreboard.ScoreboardLib;
+import me.tigerhix.lib.scoreboard.common.EntryBuilder;
+import me.tigerhix.lib.scoreboard.type.Entry;
+import me.tigerhix.lib.scoreboard.type.Scoreboard;
+import me.tigerhix.lib.scoreboard.type.ScoreboardHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -18,30 +23,49 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 
 public final class SimpleBoard extends JavaPlugin implements Listener {
 
-  private final Map<UUID, FastBoard> boardMap = new HashMap<>();
+  private final Map<UUID, Scoreboard> boardMap = new HashMap<>();
 
   private final List<String> line = new ArrayList<>();
   private final List<String> enabledWorld = new ArrayList<>();
   private String title;
-  private BukkitTask task;
+  private final ScoreboardHandler scoreboardHandler = new ScoreboardHandler() {
+    @Override
+    public String getTitle(Player player) {
+      return format(player.getUniqueId(), title);
+    }
+
+    @Override
+    public List<Entry> getEntries(Player player) {
+      EntryBuilder builder = new EntryBuilder();
+      for (String s : line) {
+        builder.next(format(player.getUniqueId(), s));
+      }
+      return builder.build();
+    }
+
+    private String format(UUID uuid, String string) {
+      return colorize(PlaceholderAPI.setPlaceholders(Bukkit.getOfflinePlayer(uuid), string));
+    }
+
+    private String colorize(String string) {
+      return ChatColor.translateAlternateColorCodes('&', string);
+    }
+  };
+  private int updateTime;
 
   @Override
   public void onEnable() {
+    ScoreboardLib.setPluginInstance(this);
     getServer().getPluginManager().registerEvents(this, this);
     load();
   }
 
   @Override
   public void onDisable() {
-    if (task != null) {
-      task.cancel();
-    }
-    boardMap.values().forEach(FastBoard::delete);
+    boardMap.values().forEach(Scoreboard::deactivate);
     boardMap.clear();
     line.clear();
     enabledWorld.clear();
@@ -61,50 +85,27 @@ public final class SimpleBoard extends JavaPlugin implements Listener {
     config.addDefault("update", 0);
 
     title = config.getString("title");
-    int time = config.getInt("update");
-    task = new BukkitRunnable() {
-      @Override
-      public void run() {
-        boardMap.forEach((uuid, fastBoard) -> {
-          fastBoard.updateTitle(format(uuid, title));
-          fastBoard.updateLines(format(uuid, line));
-        });
-      }
-    }.runTaskTimerAsynchronously(this, time, time);
+    updateTime = config.getInt("update");
     line.addAll(config.getStringList("lines"));
     enabledWorld.addAll(config.getStringList("enabled-worlds"));
 
     saveConfig();
   }
 
-  private List<String> format(UUID uuid, List<String> list) {
-    List<String> newList = new ArrayList<>(list);
-    newList.replaceAll(s -> format(uuid, s));
-    return newList;
-  }
-
-  private String format(UUID uuid, String string) {
-    return colorize(PlaceholderAPI.setPlaceholders(Bukkit.getOfflinePlayer(uuid), string));
-  }
-
-  private String colorize(String string) {
-    return ChatColor.translateAlternateColorCodes('&', string);
-  }
-
   private void addBoard(Player player) {
     boardMap.computeIfAbsent(player.getUniqueId(), uuid1 -> {
-      FastBoard board = new FastBoard(player);
+      Scoreboard scoreboard = ScoreboardLib.createScoreboard(player)
+          .setHandler(scoreboardHandler)
+          .setUpdateInterval(updateTime);
 
-      board.updateTitle(format(uuid1, title));
-      board.updateLines(format(uuid1, line));
-
-      return board;
+      scoreboard.activate();
+      return scoreboard;
     });
   }
 
   private void removeBoard(UUID uuid) {
-    boardMap.computeIfPresent(uuid, (uuid1, fastBoard) -> {
-      fastBoard.delete();
+    boardMap.computeIfPresent(uuid, (uuid1, scoreboard) -> {
+      scoreboard.deactivate();
       return null;
     });
   }
@@ -120,6 +121,10 @@ public final class SimpleBoard extends JavaPlugin implements Listener {
   @EventHandler
   public void onWorldChange(PlayerChangedWorldEvent e) {
     Player player = e.getPlayer();
+    if (!player.isOnline()) {
+      return;
+    }
+
     if (enabledWorld.contains(player.getWorld().getName())) {
       addBoard(player);
     } else {

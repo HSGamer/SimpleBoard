@@ -43,8 +43,8 @@
               <minimizeJar>true</minimizeJar>
               <relocations>
                 <relocation>
-                  <pattern>fr.mrmicky.fastboard</pattern>
-                  <shadedPattern>me.hsgamer.simpleboard.lib.fastboard</shadedPattern>
+                  <pattern>me.tigerhix.lib.scoreboard</pattern>
+                  <shadedPattern>me.hsgamer.simpleboard.lib.board</shadedPattern>
                 </relocation>
               </relocations>
             </configuration>
@@ -73,6 +73,10 @@
       <id>placeholderapi</id>
       <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
     </repository>
+    <repository>
+      <id>arim-repo</id>
+      <url>https://dl.cloudsmith.io/public/anand-beh/arim-repo/maven/</url>
+    </repository>
   </repositories>
 
   <dependencies>
@@ -87,6 +91,11 @@
       <artifactId>placeholderapi</artifactId>
       <version>2.10.6</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>me.tigerhix.lib</groupId>
+      <artifactId>scoreboard</artifactId>
+      <version>arim-1.0.2</version>
     </dependency>
   </dependencies>
 </project>
