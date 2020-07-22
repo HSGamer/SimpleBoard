@@ -26,7 +26,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class SimpleBoard extends JavaPlugin implements Listener {
 
-  private final Map<UUID, Scoreboard> boardMap = new HashMap<>();
+  private final Map<UUID, CustomScoreboard> boardMap = new HashMap<>();
 
   private final List<String> line = new ArrayList<>();
   private final List<String> enabledWorld = new ArrayList<>();
@@ -94,7 +94,7 @@ public final class SimpleBoard extends JavaPlugin implements Listener {
 
   private void addBoard(Player player) {
     boardMap.computeIfAbsent(player.getUniqueId(), uuid1 -> {
-      Scoreboard scoreboard = ScoreboardLib.createScoreboard(player)
+      CustomScoreboard scoreboard = new CustomScoreboard(player)
           .setHandler(scoreboardHandler)
           .setUpdateInterval(updateTime);
 
@@ -107,6 +107,20 @@ public final class SimpleBoard extends JavaPlugin implements Listener {
     boardMap.computeIfPresent(uuid, (uuid1, scoreboard) -> {
       scoreboard.deactivate();
       return null;
+    });
+  }
+
+  private void start(UUID uuid) {
+    boardMap.computeIfPresent(uuid, (uuid1, scoreboard) -> {
+      scoreboard.start();
+      return scoreboard;
+    });
+  }
+
+  private void stop(UUID uuid) {
+    boardMap.computeIfPresent(uuid, (uuid1, scoreboard) -> {
+      scoreboard.stop();
+      return scoreboard;
     });
   }
 
@@ -126,9 +140,9 @@ public final class SimpleBoard extends JavaPlugin implements Listener {
     }
 
     if (enabledWorld.contains(player.getWorld().getName())) {
-      addBoard(player);
+      start(player.getUniqueId());
     } else {
-      removeBoard(player.getUniqueId());
+      stop(player.getUniqueId());
     }
   }
 
