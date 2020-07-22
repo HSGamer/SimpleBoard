@@ -58,7 +58,8 @@ public class CustomScoreboard implements Scoreboard {
     // Set to the custom scoreboard
     holder.setScoreboard(scoreboard);
     // And start updating on a desired interval
-    start();
+    updateTask = Bukkit.getServer().getScheduler()
+        .runTaskTimer(ScoreboardLib.getPluginInstance(), this::update, 0, updateInterval);
   }
 
   @Override
@@ -117,15 +118,8 @@ public class CustomScoreboard implements Scoreboard {
   }
 
   public void stop() {
+    activated = false;
     updateTask.cancel();
-  }
-
-  public void start() {
-    if (updateTask != null && !updateTask.isCancelled()) {
-      stop();
-    }
-    updateTask = Bukkit.getServer().getScheduler()
-        .runTaskTimer(ScoreboardLib.getPluginInstance(), this::update, 0, updateInterval);
   }
 
   @SuppressWarnings("deprecation")

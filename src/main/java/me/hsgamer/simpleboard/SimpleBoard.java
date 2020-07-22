@@ -112,7 +112,7 @@ public final class SimpleBoard extends JavaPlugin implements Listener {
 
   private void start(UUID uuid) {
     boardMap.computeIfPresent(uuid, (uuid1, scoreboard) -> {
-      scoreboard.start();
+      scoreboard.activate();
       return scoreboard;
     });
   }
