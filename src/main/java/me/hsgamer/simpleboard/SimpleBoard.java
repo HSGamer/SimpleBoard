@@ -9,10 +9,10 @@ import java.util.Map;
 import java.util.UUID;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.tigerhix.lib.scoreboard.ScoreboardLib;
+import me.tigerhix.lib.scoreboard.api.Entry;
+import me.tigerhix.lib.scoreboard.api.Scoreboard;
+import me.tigerhix.lib.scoreboard.api.ScoreboardHandler;
 import me.tigerhix.lib.scoreboard.common.EntryBuilder;
-import me.tigerhix.lib.scoreboard.type.Entry;
-import me.tigerhix.lib.scoreboard.type.Scoreboard;
-import me.tigerhix.lib.scoreboard.type.ScoreboardHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -26,7 +26,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class SimpleBoard extends JavaPlugin implements Listener {
 
-  private final Map<UUID, CustomScoreboard> boardMap = new HashMap<>();
+  private final Map<UUID, Scoreboard> boardMap = new HashMap<>();
 
   private final List<String> line = new ArrayList<>();
   private final List<String> enabledWorld = new ArrayList<>();
@@ -94,7 +94,7 @@ public final class SimpleBoard extends JavaPlugin implements Listener {
 
   private void addBoard(Player player) {
     boardMap.computeIfAbsent(player.getUniqueId(), uuid1 -> {
-      CustomScoreboard scoreboard = new CustomScoreboard(player)
+      Scoreboard scoreboard = ScoreboardLib.createScoreboard(player)
           .setHandler(scoreboardHandler)
           .setUpdateInterval(updateTime);
 
@@ -119,7 +119,7 @@ public final class SimpleBoard extends JavaPlugin implements Listener {
 
   private void stop(UUID uuid) {
     boardMap.computeIfPresent(uuid, (uuid1, scoreboard) -> {
-      scoreboard.stop();
+      scoreboard.stopUpdateTask();
       return scoreboard;
     });
   }
