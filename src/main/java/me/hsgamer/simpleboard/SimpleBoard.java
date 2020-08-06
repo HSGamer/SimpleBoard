@@ -93,42 +93,38 @@ public final class SimpleBoard extends JavaPlugin implements Listener {
   }
 
   private void addBoard(Player player) {
-    boardMap.computeIfAbsent(player.getUniqueId(), uuid1 -> {
-      Scoreboard scoreboard = ScoreboardLib.createScoreboard(player)
-          .setHandler(scoreboardHandler)
-          .setUpdateInterval(updateTime);
-
-      scoreboard.activate();
-      return scoreboard;
-    });
+    boardMap.computeIfAbsent(player.getUniqueId(), uuid ->
+        ScoreboardLib
+            .createScoreboard(player)
+            .setHandler(scoreboardHandler)
+            .setUpdateInterval(updateTime));
   }
 
   private void removeBoard(UUID uuid) {
-    boardMap.computeIfPresent(uuid, (uuid1, scoreboard) -> {
-      scoreboard.deactivate();
-      return null;
-    });
+    if (boardMap.containsKey(uuid)) {
+      boardMap.remove(uuid).deactivate();
+    }
   }
 
   private void start(UUID uuid) {
-    boardMap.computeIfPresent(uuid, (uuid1, scoreboard) -> {
-      scoreboard.activate();
-      return scoreboard;
-    });
+    if (boardMap.containsKey(uuid)) {
+      boardMap.get(uuid).activate();
+    }
   }
 
   private void stop(UUID uuid) {
-    boardMap.computeIfPresent(uuid, (uuid1, scoreboard) -> {
-      scoreboard.stopUpdateTask();
-      return scoreboard;
-    });
+    if (boardMap.containsKey(uuid)) {
+      boardMap.get(uuid).stopUpdateTask();
+    }
   }
 
   @EventHandler
   public void onJoin(PlayerJoinEvent e) {
     Player player = e.getPlayer();
+    addBoard(player);
+
     if (enabledWorld.contains(player.getWorld().getName())) {
-      addBoard(player);
+      start(player.getUniqueId());
     }
   }
 
