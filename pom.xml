@@ -43,7 +43,7 @@
                             <minimizeJar>true</minimizeJar>
                             <relocations>
                                 <relocation>
-                                    <pattern>me.tigerhix.lib.scoreboard</pattern>
+                                    <pattern>fr.mrmicky.fastboard</pattern>
                                     <shadedPattern>me.hsgamer.simpleboard.lib.board</shadedPattern>
                                 </relocation>
                             </relocations>
@@ -74,8 +74,8 @@
             <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
         </repository>
         <repository>
-            <id>plugilyprojects-repo</id>
-            <url>https://maven.plugily.xyz/</url>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
         </repository>
     </repositories>
 
@@ -93,9 +93,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>me.tigerhix.lib</groupId>
-            <artifactId>scoreboard</artifactId>
-            <version>1.0.5</version>
+            <groupId>fr.mrmicky</groupId>
+            <artifactId>FastBoard</artifactId>
+            <version>1.1.0</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
