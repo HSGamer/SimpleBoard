@@ -11,7 +11,7 @@
 
     <name>SimpleBoard</name>
 
-    <description>Simple Scoreboard Per World</description>
+    <description>Simple Scoreboard</description>
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
