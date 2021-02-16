@@ -19,7 +19,7 @@ public final class Utils {
     public static String replacePlaceholders(UUID uuid, String string) {
         OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
         while (PlaceholderAPI.containsBracketPlaceholders(string)) {
-            string = PlaceholderAPI.setPlaceholders(player, string);
+            string = PlaceholderAPI.setBracketPlaceholders(player, string);
         }
         return string;
     }
