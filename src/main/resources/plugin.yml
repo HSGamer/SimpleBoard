@@ -4,4 +4,4 @@ main: me.hsgamer.simpleboard.SimpleBoard
 api-version: 1.16
 depend: [ PlaceholderAPI ]
 authors: [ HSGamer ]
-description: Simple Scoreboard Per World
+description: ${project.description}
