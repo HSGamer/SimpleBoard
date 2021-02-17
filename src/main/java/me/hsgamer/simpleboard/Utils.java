@@ -22,7 +22,7 @@ public final class Utils {
         do {
             old = string;
             string = PlaceholderAPI.setBracketPlaceholders(player, string);
-        } while (!old.equals(string));
+        } while (PlaceholderAPI.containsBracketPlaceholders(string) && !old.equals(string));
         return PlaceholderAPI.setPlaceholders(player, string);
     }
 
