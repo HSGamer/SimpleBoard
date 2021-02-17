@@ -23,7 +23,7 @@ public class BoardHandler {
         config.options().copyDefaults(true);
         config.addDefault("title", "&c&lTitle");
         config.addDefault("lines", Arrays.asList(
-                "&cPlayer: {player_name}",
+                "&cPlayer: %player_name%",
                 "",
                 "Hello"
         ));

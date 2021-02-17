@@ -3,7 +3,6 @@ package me.hsgamer.simpleboard;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
 
 import java.util.UUID;
 
@@ -17,11 +16,7 @@ public final class Utils {
     }
 
     public static String replacePlaceholders(UUID uuid, String string) {
-        OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
-        while (PlaceholderAPI.containsBracketPlaceholders(string)) {
-            string = PlaceholderAPI.setBracketPlaceholders(player, string);
-        }
-        return string;
+        return PlaceholderAPI.setPlaceholders(Bukkit.getOfflinePlayer(uuid), string);
     }
 
     public static String colorize(String string) {
