@@ -1,6 +1,6 @@
 package me.hsgamer.simpleboard;
 
-import me.hsgamer.simpleboard.lib.board.FastBoard;
+import fr.mrmicky.fastboard.FastBoard;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
